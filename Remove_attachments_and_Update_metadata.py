@@ -14,6 +14,10 @@ This script:
 Usage:
     python Remove_attachments_and_Update_metadata.py
 
+    This will open file selection dialogs:
+    1. Select the input PDF file to clean
+    2. Choose the output location and filename for the cleaned PDF
+
 Main function:
     clean_pdf(input_path, output_path, custom_metadata={...})
 
@@ -27,6 +31,8 @@ import pikepdf
 import traceback
 import datetime
 import os
+import tkinter as tk
+from tkinter import filedialog
 
 
 def log(msg, level="INFO"):
@@ -171,16 +177,40 @@ def clean_pdf(input_pdf, output_pdf, custom_metadata=None):
 # 🚀 RUN
 # =========================
 if __name__ == "__main__":
-    input_file = r"D:\Python_Projects\POC_Remove_attachments_and_Update_metadata\sample\Sample PDF_with_attachments.pdf"
-    output_file = r"D:\Python_Projects\POC_Remove_attachments_and_Update_metadata\sample\Sample PDF_with_(removed attachments).pdf"
+    # Hide the main tkinter window
+    root = tk.Tk()
+    root.withdraw()
+    
+    # Select input PDF file
+    input_file = filedialog.askopenfilename(
+        title="Select PDF file to clean",
+        filetypes=[("PDF files", "*.pdf")]
+    )
+    
+    if not input_file:
+        log("No input file selected. Exiting.", "INFO")
+        exit()
+    
+    # Select output location for cleaned PDF
+    default_output = os.path.splitext(os.path.basename(input_file))[0] + "_cleaned.pdf"
+    output_file = filedialog.asksaveasfilename(
+        title="Save cleaned PDF as",
+        defaultextension=".pdf",
+        filetypes=[("PDF files", "*.pdf")],
+        initialfile=default_output
+    )
+    
+    if not output_file:
+        log("No output file selected. Exiting.", "INFO")
+        exit()
 
     # Define custom metadata to add to the PDF
     metadata = {
-        "Author": "update the author name",
-        "Subject": "Sample PDF file with removed attachments and metadata",
-        "Keywords": "Removed attachments,Removed non-required Metadata,Updated PDF",
-        "Title": "Sample PDF_with_(removed attachments)",
-        "Creator": "Script"
+        "Author": "Anshul Sharma",
+        "Subject": "Resume for Data Engineering Profile",
+        "Keywords": "Data Engineering,professional,2.5 years of experience,Python,SQL,PySpark,Apache Spark,Apache Airflow,ETL,ELT,Data Pipelines,Data Engineering,Data Warehousing,Data Modeling,Batch Processing,Stream Processing,Big Data,Data Lake,Data Lakehouse,Distributed Computing,Schema Design,Star Schema,Snowflake Schema,SQL Optimization,Data Transformation,Data Ingestion,Data Processing,Data Integration,Workflow Orchestration,DAGs,Azure Data Factory,Azure Synapse Analytics,Azure Databricks,Azure Data Lake Storage,ADLS Gen2,Azure SQL Database,Azure Functions,Azure Event Hub,Azure Stream Analytics,Azure Purview,Azure Monitor,Amazon S3,AWS Glue,AWS Redshift,AWS Lambda,AWS RDS,AWS EMR,Amazon Athena,AWS Kinesis,Amazon MSK,AWS Step Functions,Amazon MWAA,Google Cloud Storage,BigQuery,Cloud SQL,Dataflow,Dataproc,Pub/Sub,Cloud Composer,Apache Beam,Kafka,Hadoop,Hive,Presto,Trino,Delta Lake,Parquet,ORC,Avro,Docker,Kubernetes,Git,CI/CD,Linux,Shell Scripting,PL/SQL,Apache Spark,Databricks,Git,GitHub,Apache Airflow,Apache Kafka,Snowflake,Oracle BI Publisher,IBM Cognos,Looker Studio,Oracle SQL,PostgreSQL,MySQL,MongoDB,Flutter,SonarQube,Microsoft Azure,Azure Data Factory,Google Cloud,Google Sheets,Google Apps Script,Zapier,REST APIs",
+        "Title": "Resume_Anshul_Sharma",
+        "Creator": "Anshul Sharma"
     }
 
     clean_pdf(input_file, output_file, custom_metadata=metadata)
